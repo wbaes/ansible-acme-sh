@@ -285,6 +285,13 @@
   register: list_domains
   become_user: "{{ acme_sh_become_user }}"
 
+- name: List acme.sh certificate information [root version]
+  debug:
+    msg: "{{ list_domains.stdout_lines }}"
+  when: 
+    - not ansible_check_mode and acme_sh_list_domains and not acme_sh_uninstall
+    - acme_sh_for_user_data
+
 - name: Register acme.sh certificate information
   command: ./acme.sh --list
   args:
@@ -299,4 +306,6 @@
 - name: List acme.sh certificate information
   debug:
     msg: "{{ list_domains.stdout_lines }}"
-  when: not ansible_check_mode and acme_sh_list_domains and not acme_sh_uninstall
+  when: 
+    - not ansible_check_mode and acme_sh_list_domains and not acme_sh_uninstall
+    - not acme_sh_for_user_data
