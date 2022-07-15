@@ -274,11 +274,24 @@
   changed_when: issue_result.results[domains_index].changed or renew_result.results[domains_index].changed
   failed_when: install_cert_result.rc != 0 and "Reload error for" not in install_cert_result.stderr
 
+- name: Register acme.sh certificate information [root version]
+  command: ./acme.sh --list
+  args:
+    chdir: "/.acme.sh"
+  when:
+    - acme_sh_list_domains and not acme_sh_uninstall
+    - acme_sh_for_user_data
+  changed_when: False
+  register: list_domains
+  become_user: "{{ acme_sh_become_user }}"
+
 - name: Register acme.sh certificate information
   command: ./acme.sh --list
   args:
     chdir: "~/.acme.sh"
-  when: acme_sh_list_domains and not acme_sh_uninstall
+  when:
+    - acme_sh_list_domains and not acme_sh_uninstall
+    - not acme_sh_for_user_data
   changed_when: False
   register: list_domains
   become_user: "{{ acme_sh_become_user }}"
